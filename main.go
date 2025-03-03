@@ -7,7 +7,7 @@ import (
 	"os"
 
 	config "goPgxSqlx/config"
-	"goPgxSqlx/controller"
+	"goPgxSqlx/controllers"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -34,7 +34,7 @@ func main() {
 	r.Use(middleware.RealIP)
 
   // Create Handler instance
-  userHandler := &controller.UserHandler{DB: db.DB}
+  userHandler := &controllers.UserHandler{DB: db.DB}
 
 	// Routes
 	r.Route("/api/v1", func(r chi.Router) {

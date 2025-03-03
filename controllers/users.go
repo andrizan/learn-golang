@@ -1,7 +1,6 @@
-package controller
+package controllers
 
 import (
-	"encoding/json"
 	"goPgxSqlx/config"
 	"goPgxSqlx/models"
 	"log"
@@ -22,12 +21,12 @@ func (h *UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
   err := h.DB.SelectContext(r.Context(), &users, "SELECT * FROM users")
   if err != nil {
     log.Printf("Error getting users: %v", err)
-    http.Error(w, config.JsonError("Failed to retrieve users"), http.StatusInternalServerError)
+    w.WriteHeader(http.StatusInternalServerError)
+    config.WriteJSONResponse(w, "Failed to retrieve users", http.StatusInternalServerError)
     return
   }
 
-  w.Header().Set("Content-Type", "application/json")
-  json.NewEncoder(w).Encode(users)
+  config.WriteJSONResponse(w, users, http.StatusOK)
 }
 
 // GetUserByID returns a specific user by ID
@@ -35,7 +34,8 @@ func (h *UserHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
   id := chi.URLParam(r, "id")
   userID, err := uuid.Parse(id)
   if err != nil {
-    http.Error(w, config.JsonError("Invalid user ID"), http.StatusBadRequest)
+    w.WriteHeader(http.StatusBadRequest)
+    config.WriteJSONResponse(w, "Invalid user ID", http.StatusBadRequest)
     return
   }
 
@@ -43,10 +43,9 @@ func (h *UserHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
   err = h.DB.GetContext(r.Context(), &user, "SELECT * FROM users WHERE id = $1", userID)
   if err != nil {
     log.Printf("Error getting user %s: %v", userID, err)
-    http.Error(w, config.JsonError("User not found"), http.StatusNotFound)
+    config.WriteJSONResponse(w, "User not found", http.StatusNotFound)
     return
   }
 
-  w.Header().Set("Content-Type", "application/json")
-  json.NewEncoder(w).Encode(user)
+  config.WriteJSONResponse(w, user, http.StatusOK)
 }
