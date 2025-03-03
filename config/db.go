@@ -41,7 +41,7 @@ func InitDB() {
 
 // CloseDB closes the database connection
 func CloseDB() {
-	if DB != nil {
-		DB.Close()
-	}
+  if DB != nil {
+    DB.Close()
+  }
 }
